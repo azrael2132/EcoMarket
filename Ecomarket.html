@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EcoMarket</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -26,7 +27,6 @@
             background-size: cover;
             color: white;
             padding: 380px 0;
-            align-content: center;
             text-align: center;
         }
         .hero-section h1 {
@@ -51,10 +51,19 @@
             text-align: center;
             padding: 20px;
         }
+        .cart-items {
+            margin-top: 20px;
+            border-top: 1px solid #ccc;
+            padding-top: 10px;
+        }
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
 
+<!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="#">EcoMarket</a>
@@ -64,65 +73,190 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="#">Inicio</a>
+                    <a class="nav-link active" href="#" onclick="showHome()">Inicio</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Productos</a>
+                    <a class="nav-link" href="#" onclick="showCategory('organicos')">Productos</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Carrito</a>
+                    <a class="nav-link" href="#" onclick="showCart()">Carrito <span id="cart-count">0</span></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Contacto</a>
+                    <a class="nav-link" href="#" onclick="showContact()">Contacto</a>
                 </li>
             </ul>
         </div>
     </div>
 </nav>
 
-<section class="hero-section">
+<!-- Hero Section -->
+<section class="hero-section hidden" id="hero">
+
 </section>
 
-<div class="container my-5">
+<!-- Product Categories -->
+<div class="container my-5 hidden" id="product-category">
     <h2 class="text-center mb-4">Categorías de Productos</h2>
-    <div class="row">
-        <div class="col-md-4">
-            <div class="card product-card">
-                <img src="organicos.jfif" class="card-img-top" alt="Categoría 1">
-                <div class="card-body">
-                    <h5 class="card-title">Productos Orgánicos</h5>
-                    <p class="card-text">Frutas, verduras y más, cultivados de manera ecológica.</p>
-                    <a href="#" class="btn btn-success">Ver Productos</a>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card product-card">
-                <img src="hogar.webp" class="card-img-top" alt="Categoría 2">
-                <div class="card-body">
-                    <h5 class="card-title">Productos Ecológicos para el Hogar</h5>
-                    <p class="card-text">Artículos eco-friendly para tu hogar y oficina.</p>
-                    <a href="#" class="btn btn-success">Ver Productos</a>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card product-card">
-                <img src="cosmeticos.jfif" class="card-img-top" alt="Categoría 3">
-                <div class="card-body">
-                    <h5 class="card-title">Cosméticos Naturales</h5>
-                    <p class="card-text">Cuidado personal con ingredientes 100% naturales.</p>
-                    <a href="#" class="btn btn-success">Ver Productos</a>
-                </div>
-            </div>
-        </div>
+    <div class="row" id="category-products">
+        <!-- Los productos se mostrarán aquí -->
     </div>
 </div>
 
+<!-- Cart Section -->
+<div class="container my-5 hidden" id="cart-section">
+    <h2 class="text-center mb-4">Tu Carrito</h2>
+    <div id="cart-items"></div>
+    <button class="btn btn-success mt-3" onclick="clearCart()">Vaciar Carrito</button>
+</div>
+
+<!-- Contact Section -->
+<section id="contact" class="container my-5 hidden">
+    <h2 class="text-center mb-4">Contacto</h2>
+    <form id="contact-form">
+        <div class="mb-3">
+            <label for="contact-name" class="form-label">Nombre</label>
+            <input type="text" class="form-control" id="contact-name" placeholder="Escribe tu nombre" required>
+        </div>
+        <div class="mb-3">
+            <label for="contact-email" class="form-label">Correo Electrónico</label>
+            <input type="email" class="form-control" id="contact-email" placeholder="Escribe tu correo" required>
+        </div>
+        <div class="mb-3">
+            <label for="contact-message" class="form-label">Mensaje</label>
+            <textarea class="form-control" id="contact-message" rows="4" placeholder="Escribe tu mensaje" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-success">Enviar</button>
+    </form>
+    <div id="contact-response" style="display:none; color: green; margin-top: 15px;">
+        ¡Gracias por contactarnos! Nos pondremos en contacto contigo pronto.
+    </div>
+</section>
+
+<!-- Footer -->
 <footer class="footer">
     <p>&copy; 2024 EcoMarket | Todos los derechos reservados.</p>
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Datos de productos por categorías
+    const products = {
+        organicos: [
+            { name: 'Manzanas', price: 3.5, image: 'organicos.jfif' },
+            { name: 'Tomates', price: 2.2, image: 'organicos.jfif' },
+            { name: 'Zanahorias', price: 1.5, image: 'organicos.jfif' },
+        ],
+        hogar: [
+            { name: 'Detergente Ecológico', price: 5.0, image: 'hogar.webp' },
+            { name: 'Jabón Natural', price: 2.8, image: 'hogar.webp' },
+        ],
+        cosmeticos: [
+            { name: 'Crema Facial', price: 10.0, image: 'cosmeticos.jfif' },
+            { name: 'Shampoo Natural', price: 7.5, image: 'cosmeticos.jfif' },
+        ],
+    };
+
+    // Carrito de compras
+    let cart = [];
+
+    // Mostrar productos por categoría
+    function showCategory(category) {
+        const categoryProducts = products[category];
+        const productContainer = document.getElementById('category-products');
+        productContainer.innerHTML = '';
+        
+        categoryProducts.forEach(product => {
+            const card = `
+                <div class="col-md-4">
+                    <div class="card product-card">
+                        <img src="${product.image}" class="card-img-top" alt="${product.name}">
+                        <div class="card-body">
+                            <h5 class="card-title">${product.name}</h5>
+                            <p class="card-text">$${product.price}</p>
+                            <label for="quantity">Cantidad:</label>
+                            <input type="number" class="form-control" id="quantity" value="1" min="1" style="max-width: 70px;">
+                            <button class="btn btn-success mt-2" onclick="addToCart('${product.name}', ${product.price})">Agregar al Carrito</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            productContainer.innerHTML += card;
+        });
+
+        showSection('product-category');
+    }
+
+    // Agregar al carrito
+    function addToCart(productName, price) {
+        const quantity = document.getElementById('quantity').value;
+        const product = { name: productName, price: price, quantity: parseInt(quantity) };
+        cart.push(product);
+        updateCartCount();
+    }
+
+    // Actualizar el conteo de productos en el carrito
+    function updateCartCount() {
+        const cartCount = cart.reduce((total, product) => total + product.quantity, 0);
+        document.getElementById('cart-count').innerText = cartCount;
+    }
+
+    // Mostrar el carrito
+    function showCart() {
+        const cartItemsContainer = document.getElementById('cart-items');
+        cartItemsContainer.innerHTML = '';
+        
+        cart.forEach(item => {
+            cartItemsContainer.innerHTML += `
+                <p>${item.name} - ${item.quantity} x $${item.price}</p>
+                <button class="btn btn-danger" onclick="removeFromCart('${item.name}')">Eliminar</button>
+            `;
+        });
+
+        showSection('cart-section');
+    }
+
+    // Eliminar producto del carrito
+    function removeFromCart(productName) {
+        cart = cart.filter(product => product.name !== productName);
+        showCart();  // Actualizar la vista del carrito
+    }
+
+    // Vaciar el carrito
+    function clearCart() {
+        cart = [];
+        showCart();  // Actualizar la vista del carrito
+    }
+
+    // Mostrar la sección de contacto
+    function showContact() {
+        showSection('contact');
+    }
+
+    // Mostrar la sección correspondiente
+    function showSection(sectionId) {
+        const sections = document.querySelectorAll('section, .container');
+        sections.forEach(section => {
+            section.classList.add('hidden');
+        });
+        document.getElementById(sectionId).classList.remove('hidden');
+    }
+
+    // Enviar el formulario de contacto
+    document.getElementById('contact-form').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        // Mostrar mensaje de éxito
+        document.getElementById('contact-response').style.display = 'block';
+        document.getElementById('contact-form').reset();
+    });
+
+    // Mostrar la sección de inicio
+    function showHome() {
+        showSection('hero');
+    }
+
+    // Inicializar la vista de inicio
+    showHome();
+</script>
+
 </body>
 </html>
